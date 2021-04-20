@@ -16,7 +16,7 @@
         </b-list-group-item>
       </b-list-group>
       <hr class="my-4" />
-      <b-button variant="primary" @click="submitAnswer" :disabled="choixAnswer.length === 0 || answered" >Submit</b-button>
+      <b-button variant="primary" @click="submitAnswer" :disabled="choixAnswer.length === 0 || this.answered" >Submit</b-button>
       <b-button @click="next" variant="success">Next</b-button>
     </b-jumbotron>
   </div>
@@ -33,15 +33,18 @@ export default {
   },
   data() {
     return {
-      selectedAnswers: [],
+      answered:false,
       shuffledAnswers: [],
-      choixAnswer: [],
+      choixAnswer: []
     };
   },
   watch: {
+    // Le watch te permet ici de renitialiser les valeurs a chaque changement de la question c-a-d quand on clique sur le next
     currentQuestion: {
       immediate: true,
       handler() {
+        this.shuffledAnswers= [],
+        this.choixAnswer= [],
         this.answered = false;
         this.shuffleAnswers();
       },
@@ -57,7 +60,7 @@ export default {
     },
   },
 
-  methods: {
+  methods:{
     shuffleAnswers() {
       for (let i = 0; i < this.answers.length; i++) {
         for (let j = 0; j < this.currentQuestion.correct_answer.length; j++) {
@@ -75,11 +78,12 @@ export default {
     if(this.choixAnswer.indexOf(this.answers[i]) === -1){
       this.choixAnswer.push(this.answers[i]);
     }
-        console.log(this.choixAnswer);
+        // console.log(this.choixAnswer);
     },
 
     submitAnswer() {
     let isCorrect= false
+    this.answered = true;
     let cmp = 0
     if (this.choixAnswer.length == this.shuffledAnswers.length)
     {
@@ -94,35 +98,36 @@ export default {
         isCorrect = false
       }else
         isCorrect= true
-
-        this.answered = true;
         this.increment(isCorrect);
-        this.shuffledAnswers.splice(this.shuffledAnswers);
-        this.choixAnswer.splice(this.choixAnswer);
 
     }else 
       this.increment(isCorrect)
-      this.choixAnswer.splice(this.choixAnswer);
-  },
+    },
 
-  answerClass(index) {//gestions des choix
-    let answerClass=''
+    answerClass(index) {
+    let currentSelection=  this.answers[index];
+    let answerClass='';
     for (let i = 0; i < this.choixAnswer.length; i++){
-      for (let j = 0; j < this.shuffledAnswers.length; j++){
-        if(!this.answered && this.choixAnswer[i] === this.answers[index]){
+      if(!this.answered && this.choixAnswer[i] === currentSelection){
         answerClass = 'selected'
-        }/**************************************************** */
-          else if(this.answered && this.shuffledAnswers[j] === this.answers[index]){
-          answerClass = 'correct'
-          }
-            else if (this.answered &&  this.choixAnswer[i] === this.answers[index] && this.shuffledAnswers[j] !== this.answers[index]){
-              answerClass = 'incorrect'
-            }
-      }
-    } return answerClass;
-  }
-  },
+      }/**************************************************** */
+    }
+    if(this.answered)
+      
+        if(this.shuffledAnswers.includes(currentSelection) ){
+          answerClass = 'correct';
+        }
+        else if(!this.shuffledAnswers.includes(currentSelection) && this.choixAnswer.includes(currentSelection)) {
+          answerClass = 'incorrect';
+        }
   
+    // console.log(this.shuffledAnswers);
+    // console.log(this.choixAnswer);
+    return answerClass;
+  }
+
+  }
+
 };
 </script>
 

@@ -38,11 +38,11 @@ export default {
     }
   },
   methods:{
-    next(){console.log(this.index);
-      if(this.index > this.questions.length ){
-        alert('Vous avez terminer le QCM ')
-      }else this.index++
+    next(){
+        this.index++
+      console.log(this.questions.length);
     },
+
     increment(isCorrect){
       
       if(isCorrect){console.log('increment');
